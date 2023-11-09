@@ -76,7 +76,7 @@
                         if (drink['strIngredient' + i]) {
                             const measure = drink['strMeasure' + i] ? drink['strMeasure' + i] : '';
                             ingredients[ingredients.length] = `
-                            <li>${drink['strIngredient' + i]} ${measure}</li>`;
+                            <li> <a href="#" onclick="ing(event)">${drink['strIngredient' + i]}</a> ${measure}</li>`;
                         }
                     }
 
@@ -95,7 +95,7 @@
                         <li>Image Atribution: ${drink.strImageAttribution}</li>
                         </ul>
                         <h4>Ingredients:</h4>
-                        <ul><a href="#"  onclick="ing(event)">${ingredients.join('')}</a></ul>
+                        <ul>${ingredients.join('')}</ul>
                             <button class="btn btn-primary" onclick="searchCocktails(event)">Back to cocktail list</button>
                     </div>
                 `
@@ -224,9 +224,9 @@
         }
 
         function ing(e) {
-            const ingr= e.target.innerText
+            const  ingredients= e.target.innerText
             
-            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' + ingr)
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' +  ingredients)
             .then(resp => resp.json())
                 .then(resp => {
                     if (!resp.drinks) {
@@ -237,7 +237,7 @@
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h5>${drink.strDrink}</h5>
                         <div class="d-flex justify-content-between">
-                          <span> ${ingr}</span>
+                          <span> ${ ingredients}</span>
                         </div>
                     </div>
                 `).join('');
