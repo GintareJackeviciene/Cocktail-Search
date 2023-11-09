@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coctail-search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        img {
+            max-width: 100%;
+        }
+
+        .container {
+            max-width: 1024px;
+        }
+
+        .coctail {
+            cursor: pointer;
+        }
+
+        .abc {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-5">
+        <form class="input-group" onsubmit="searchCocktails(event)">
+            <input type="text" class="form-control" placeholder="Enter coctail name">
+            <button class="btn btn-success">Search</button>
+        </form>
+        <button class=" btn btn-warning my-3 d-grid  col-3 mx-auto">Man sekasi!</button>
+        <div class="abc"></div>
+        <div class="result row mt-3"></div>
+
+    </div>
+
+    <script>
+        function searchCocktails(e) {
+            e.preventDefault();
+
+            //console.log(e.target.querySelector('input').value);
+            const val = document.querySelector('input').value;
+
+
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=' + val)
+                .then(resp => resp.json())
+                .then(resp => {
+                    if (!resp.drinks)
+                        return;
+
+                    document.querySelector('.result').innerHTML = resp.drinks.map(drink => `
+            <div class= "coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}"/>
+                <h4>${drink.strDrink}</h4>
+                <div class="d-flex justify-content-between">
+                            <span>${drink.strCategory}</span>
+                        </div> 
+                </div>
+                `).join('')
+                })
+        }
+        function showCocktail(id) {
+            //console.log(id);
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=' + id)
+                .then(resp => resp.json())
+                .then(resp => {
+                    const drink = resp.drinks[0];
+                    const ingredients = [];
+
+                    for (let i = 1; i <= 15; i++) {
+                        if (drink['strIngredient' + i]) {
+                            const measure = drink['strMeasure' + i] ? drink['strMeasure' + i] : '';
+                            ingredients[ingredients.length] = `
+                            <li>${drink['strIngredient' + i]} ${measure}</li>`;
+                        }
+                    }
+
+                    document.querySelector('.result').innerHTML = `
+                <div class="col-6">
+                    <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}"/>
+                    </div>
+                    <div class="col-6">
+                    <h2>${drink.strDrink}</h2>
+                    <p>${drink.strInstructions}</p>
+                    <ul>
+                        <li><a href="#" onclick="alc(event)" >${drink.strAlcoholic}</a></li>
+                        <li>Category: <a href="#" onclick="categ(event)" >${drink.strCategory}</a></li>
+                        <li>Glass Type: <a href="#" onclick="stikline(event)"> ${drink.strGlass}</a></li>
+                        <li>IBA: ${drink.strIBA}</li>
+                        <li>Image Atribution: ${drink.strImageAttribution}</li>
+                        </ul>
+                        <h4>Ingredients:</h4>
+                        <ul><a href="#"  onclick="ing(event)">${ingredients.join('')}</a></ul>
+                            <button class="btn btn-primary" onclick="searchCocktails(event)">Back to cocktail list</button>
+                    </div>
+                `
+                })
+        }
+
+        const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (let i = 0; i < abc.length; i++) {
+            document.querySelector(".abc"
+            ).innerHTML += `<a href="#" onclick="letter(event)">${abc[i]}</a>`;
+        }
+
+        function letter(e) {
+            const letter = e.target.innerText
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?f=' + letter)
+                .then(resp => resp.json())
+                .then(resp => {
+                    const drinks = resp.drinks
+                    console.log(drinks)
+                    if (drinks === null) {
+                        return;
+                    }
+
+                    document.querySelector('.result').innerHTML = drinks.map(drink => `
+                    <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
+                        <h3>${drink.strDrink}</h3>
+                        <div class="d-flex justify-content-between">
+                            <span>${drink.strCategory}</span>
+                            <span>${drink.strAlcoholic}</span>
+                        </div>
+                    </div>
+                `).join('');
+                });
+        }
+        function sekme() {
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+                .then(resp => resp.json())
+                .then(resp => {
+                    if (!resp.drinks) {
+                        return;
+                    }
+                    const drink = resp.drinks[0];
+
+                    document.querySelector('.result').innerHTML = `
+                    <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
+                        <h3>${drink.strDrink}</h3>
+                        <div class="d-flex justify-content-between">
+                            <span>${drink.strCategory}</span>
+                            <span> ${drink.strAlcoholic}</span>
+                        </div>
+                    </div>
+                `;
+                });        
+        }
+        const mygtukas = document.querySelector('.btn-warning');
+        mygtukas.addEventListener('click', sekme)
+
+
+        function alc(e) {
+            const alco = e.target.innerText
+            
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=' + alco)
+            .then(resp => resp.json())
+                .then(resp => {
+                    if (!resp.drinks) {
+                        return;
+                    }
+                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
+                        <h5>${drink.strDrink}</h5>
+                        <div class="d-flex justify-content-between">
+                          <span> ${alco}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                });        
+        }
+
+        
+        function stikline(e) {
+            const glasses = e.target.innerText
+            
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?g=' + glasses)
+            .then(resp => resp.json())
+                .then(resp => {
+                    if (!resp.drinks) {
+                        return;
+                    }
+                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
+                        <h5>${drink.strDrink}</h5>
+                        <div class="d-flex justify-content-between">
+                          <span> ${glasses}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                });        
+        }
+
+        function categ(e) {
+            const cat= e.target.innerText
+            
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=' + cat)
+            .then(resp => resp.json())
+                .then(resp => {
+                    if (!resp.drinks) {
+                        return;
+                    }
+                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
+                        <h5>${drink.strDrink}</h5>
+                        <div class="d-flex justify-content-between">
+                          <span> ${cat}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                });        
+        }
+
+        function ing(e) {
+            const ingr= e.target.innerText
+            
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' + ingr)
+            .then(resp => resp.json())
+                .then(resp => {
+                    if (!resp.drinks) {
+                        return;
+                    }
+                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
+                        <h5>${drink.strDrink}</h5>
+                        <div class="d-flex justify-content-between">
+                          <span> ${ingr}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                });        
+        }
+    </script>
+</body>
+
+</html>
