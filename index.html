@@ -33,13 +33,14 @@
             <input type="text" class="form-control" placeholder="Enter coctail name">
             <button class="btn btn-success">Search</button>
         </form>
-        <button class=" btn btn-warning my-3 d-grid  col-3 mx-auto">Man sekasi!</button>
+        <button class=" btn btn-warning my-3 d-grid  col-3 mx-auto" onclick="sekme()">Man sekasi!</button>
         <div class="abc"></div>
         <div class="result row mt-3"></div>
 
     </div>
 
     <script>
+        const a = document.querySelector('.result');
         function searchCocktails(e) {
             e.preventDefault();
 
@@ -53,13 +54,13 @@
                     if (!resp.drinks)
                         return;
 
-                    document.querySelector('.result').innerHTML = resp.drinks.map(drink => `
-            <div class= "coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
+                    a.innerHTML = resp.drinks.map(drink => `
+                <div class= "coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                 <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}"/>
                 <h4>${drink.strDrink}</h4>
                 <div class="d-flex justify-content-between">
                             <span>${drink.strCategory}</span>
-                        </div> 
+                </div> 
                 </div>
                 `).join('')
                 })
@@ -76,11 +77,12 @@
                         if (drink['strIngredient' + i]) {
                             const measure = drink['strMeasure' + i] ? drink['strMeasure' + i] : '';
                             ingredients[ingredients.length] = `
-                            <li> <a href="#" onclick="ing(event)">${drink['strIngredient' + i]}</a> ${measure}</li>`;
+                            <li> <a href="#" onclick="ing(event)">${drink['strIngredient' + i]}
+                                </a> ${measure}</li>`;
                         }
                     }
 
-                    document.querySelector('.result').innerHTML = `
+                    a.innerHTML = `
                 <div class="col-6">
                     <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}"/>
                     </div>
@@ -119,7 +121,7 @@
                         return;
                     }
 
-                    document.querySelector('.result').innerHTML = drinks.map(drink => `
+                    a.innerHTML = drinks.map(drink => `
                     <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h3>${drink.strDrink}</h3>
@@ -140,7 +142,7 @@
                     }
                     const drink = resp.drinks[0];
 
-                    document.querySelector('.result').innerHTML = `
+                    a.innerHTML = `
                     <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h3>${drink.strDrink}</h3>
@@ -150,22 +152,19 @@
                         </div>
                     </div>
                 `;
-                });        
+                });
         }
-        const mygtukas = document.querySelector('.btn-warning');
-        mygtukas.addEventListener('click', sekme)
-
-
+      
         function alc(e) {
             const alco = e.target.innerText
-            
+
             fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=' + alco)
-            .then(resp => resp.json())
+                .then(resp => resp.json())
                 .then(resp => {
                     if (!resp.drinks) {
                         return;
                     }
-                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    a.innerHTML = resp.drinks.map(drink => `
                     <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h5>${drink.strDrink}</h5>
@@ -174,21 +173,21 @@
                         </div>
                     </div>
                 `).join('');
-                
-                });        
+
+                });
         }
 
-        
+
         function stikline(e) {
             const glasses = e.target.innerText
-            
+
             fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?g=' + glasses)
-            .then(resp => resp.json())
+                .then(resp => resp.json())
                 .then(resp => {
                     if (!resp.drinks) {
                         return;
                     }
-                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    a.innerHTML = resp.drinks.map(drink => `
                     <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h5>${drink.strDrink}</h5>
@@ -197,20 +196,20 @@
                         </div>
                     </div>
                 `).join('');
-                
-                });        
+
+                });
         }
 
         function categ(e) {
-            const cat= e.target.innerText
-            
+            const cat = e.target.innerText
+
             fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=' + cat)
-            .then(resp => resp.json())
+                .then(resp => resp.json())
                 .then(resp => {
                     if (!resp.drinks) {
                         return;
                     }
-                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    a.innerHTML = resp.drinks.map(drink => `
                     <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h5>${drink.strDrink}</h5>
@@ -219,30 +218,30 @@
                         </div>
                     </div>
                 `).join('');
-                
-                });        
+
+                });
         }
 
         function ing(e) {
-            const  ingredients= e.target.innerText
-            
-            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' +  ingredients)
-            .then(resp => resp.json())
+            const ingredients = e.target.innerText
+
+            fetch('https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' + ingredients)
+                .then(resp => resp.json())
                 .then(resp => {
                     if (!resp.drinks) {
                         return;
                     }
-                    document.querySelector('.result').innerHTML = resp.drinks.map(drink =>`
+                    a.innerHTML = resp.drinks.map(drink => `
                     <div class="coctail col-4 mb-3" onclick="showCocktail(${drink.idDrink})">
                         <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" />
                         <h5>${drink.strDrink}</h5>
                         <div class="d-flex justify-content-between">
-                          <span> ${ ingredients}</span>
+                          <span> ${ingredients}</span>
                         </div>
                     </div>
                 `).join('');
-                
-                });        
+
+                });
         }
     </script>
 </body>
